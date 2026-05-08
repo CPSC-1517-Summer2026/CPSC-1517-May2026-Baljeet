@@ -138,15 +138,24 @@ namespace OOPsDemo
         Employment(string title, SupervisoryLevel level, DateTime startdate, double year)
         {
             Title = title;
-            Year = year;
             Level = level;
             StartDate = startdate;
+
+            if (year != 0.0)
+            {
+                Year = year;
+            }
+            else
+            {
+                TimeSpan days = DateTime.Today - startdate;
+                Year = Math.Round((days.Days / 365.25), 1);
+            }
         }
 
 
 
-        public void Display_Employment()
-        {  }
+                public void Display_Employment()
+                { }
 
         #endregion
 
