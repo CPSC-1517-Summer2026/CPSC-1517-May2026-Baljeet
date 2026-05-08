@@ -230,6 +230,7 @@ namespace OOPsDemo
 
         private bool CheckDate(DateTime value)
         {
+            // check date
             if (value > DateTime.Today.AddDays(1))
                 throw new ArgumentException($" the date {value} is not valid, start date can not be a future date");
             else
