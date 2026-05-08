@@ -125,37 +125,123 @@ namespace OOPsDemo
 
         Employment()
         {
-            // default intital values
-
-            Title = "unknown";
-            Year = 0.0;
-            Level = SupervisoryLevel.TeamMember;
-            StartDate = DateTime.Today;
-
-        }
+            
         //Employment(string Title, double Year);
 
-        Employment(string title, SupervisoryLevel level, DateTime startdate, double year)
+        //if there is no code within this constructor, the actions for setting
+        //  your internal fields will be using the system defaults for the datatype
+
+        //optionally
+        // you could assign values to your initial fields within this constructor typically
+        //      using literal values
+        //Why?
+        // your internal fields may have validation attached to the data for the field
+        // this validation is usually within the property
+        // you would wish to have valid data values for your internal fields
+
+            Title = "UnKnown"; //assigned to meet validation requirements
+            Level = SupervisoryLevel.TeamMember; //wish to have a different initial value
+            StartDate =DateTime.Today; //a meaningful value default 0001/01/01
+
+            //Years?
+            //the default is fine (0.0)
+            //however, if you wish you could actually assign the value 0 yourself
+            Year = 0.0;
+
+        }
+
+        //Greedy
+        //this is the constructor typically used to assign values to a instance at the time of
+        //    creation
+        //the list of parameters may or maynot contain default parameter values
+        //if you have assigned default parameter values then those parameters MUST be at the end of
+        //  the parameter list
+        //in this example years is a default parameter (it has an assigned value if the value
+        //  is not included on the coded constructor in the user program
+        public Employment(string title, SupervisoryLevel level,
+                            DateTime startdate, double years = 0.0)
         {
             Title = title;
             Level = level;
-            StartDate = startdate;
+            //Years = years;
 
-            if (year != 0.0)
+            //one could add valiation, especially if the property has a private set  OR the property
+            //  is an auto-implemented property that has restrictions
+            //example
+            //validation, start date must not exist in the future
+            //validation can be done anywhere in your class
+            //since the property is auto-implemented AND/OR has a private set,
+            //      validation can be done  in the constructor OR a behaviour 
+            //      that alters the property
+            //IF the validation is done in the property, IT WOULD NOT be an
+            //      auto-implemented property BUT a fully-implemented property
+            // .Today has a time of 00:00:00 AM
+            // .Now has a specific time of day 13:05:45 PM
+            //by using the .Today.AddDays(1) you cover all times on a specific date
+           
+             StartDate = startdate;
+
+            //during the testing of the unit tests, it has been discovered that the number of years
+            //   should also be altered to have a correct timespan
+            if (years != 0.0)
             {
-                Year = year;
+                Year = years;
             }
             else
             {
-                TimeSpan days = DateTime.Today - startdate;
-                Year = Math.Round((days.Days / 365.25), 1);
+                if (startdate != DateTime.Today)
+                {
+                    TimeSpan days = DateTime.Today - startdate;
+                    Year = Math.Round((days.Days / 365.2), 1);
+                }
             }
         }
 
+        public override string ToString()
+        {
+            //this string is known as a "comma separate value" string (csv)
+            //concern: when the date is used, it could have a , within the data value
+            //solution: IF this is a possibility that a value that is used in creating the string pattern
+            //              could make the pattern invalid, you should explicitly handle how the value should be
+            //              displayed in the string
+            //example Date:  Jan 05, 2025 (due to using StartDate.ToShortDate())
+            //solution:  specific your own format  StartDate.ToString("MMM dd yyyy")
+
+            //Another solution is to change your delimitator that separates your values to a character
+            //  that is not within your range of possible values
+            //example use a '/'
+            //when you use the .Split(delimitator) method to breakup the string into separate values
+            //  you would use the delimitator '/':  string [] pieces = thestring.Split('/')
+
+            return $"{Title},{Level},{StartDate.ToString("MMM dd yyyy")},{Year}";
+        }
 
 
-                public void Display_Employment()
-                { }
+        public void CorrectStartDate (DateTime startdate )
+        {
+            if (CheckDate(startdate))
+                StartDate = startdate;
+
+            TimeSpan days = DateTime.Today - startdate;
+            Year = Math.Round((days.Days / 365.2), 1);
+
+        }
+
+
+        private bool CheckDate(DateTime value)
+        {
+            if (value > DateTime.Today.AddDays(1))
+                throw new ArgumentException($" the date {value} is not valid, start date can not be a future date");
+            else
+                return true;
+        }
+        
+        public void SetEmploymentResponsibilityLevel( SupervisoryLevel newlevel)
+        {
+            Level = newlevel;
+        }
+
+
 
         #endregion
 
