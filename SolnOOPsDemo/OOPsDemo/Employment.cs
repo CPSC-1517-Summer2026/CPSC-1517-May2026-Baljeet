@@ -63,13 +63,88 @@ namespace OOPsDemo
         /// </summary>
         /// 
 
+
+        public string Title
+        {
+            //accessor (getter)
+            //returns the string associated with this property
+            get { return _Title; }
+            set
+            {
+                // add valication check
+                // check for the value should not be empty , null, whitespaces
+
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    throw new ArgumentNullException("Title", "Title cannot be empty or just blanks");
+                }
+                else
+                {
+                    _Title = value;
+                }
+            }
+
+        }
+
+        public double Year
+        {
+            get { return _Years; }
+            set
+            {
+                if (value <= 0)
+                {
+                    throw new ArgumentException($"the years of experience :{value} can not be zero or negative");
+                }
+                else
+                {
+                    _Years = value;
+                }
+
+            }
+        }
+
+        public SupervisoryLevel Level
+        { 
+            get { return _Level; }
+            set { _Level = value; }
+        
+        }
+
+
+        public DateTime StartDate // autoimplimented property
+        {
+            get;
+            set;
+        
+        }
+
         #endregion
         // methods
 
         #region methods
 
-        //Employment();
+        Employment()
+        {
+            // default intital values
+
+            Title = "unknown";
+            Year = 0.0;
+            Level = SupervisoryLevel.TeamMember;
+            StartDate = DateTime.Today;
+
+        }
         //Employment(string Title, double Year);
+
+        Employment(string title, SupervisoryLevel level, DateTime startdate, double year)
+        {
+            Title = title;
+            Year = year;
+            Level = level;
+            StartDate = startdate;
+        }
+
+
+
         public void Display_Employment()
         {  }
 
