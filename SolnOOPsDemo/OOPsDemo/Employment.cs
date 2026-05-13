@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace OOPsDemo
 {
     public class Employment
@@ -178,11 +179,18 @@ namespace OOPsDemo
             // .Today has a time of 00:00:00 AM
             // .Now has a specific time of day 13:05:45 PM
             //by using the .Today.AddDays(1) you cover all times on a specific date
-           
+           if(CheckDate(startdate))
              StartDate = startdate;
 
             //during the testing of the unit tests, it has been discovered that the number of years
             //   should also be altered to have a correct timespan
+            
+
+            if( !Utilities.IsZeroOrPositive(years))
+            {
+                throw new ArgumentException("Experience can't be a negative value");
+            }
+            
             if (years != 0.0)
             {
                 Year = years;
