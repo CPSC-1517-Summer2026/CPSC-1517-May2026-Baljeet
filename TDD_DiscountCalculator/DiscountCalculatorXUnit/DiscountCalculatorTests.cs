@@ -47,5 +47,53 @@ namespace DiscountCalculatorXUnit
             Assert.Equal(50, finalPrice);
 
         }
+
+        //[Fact]
+        //public void salesBetween100_and_500_ShouldHave_10_Discount()
+        //{
+        //    //assign or arrange
+        //    // need a class for dicount calculator and create new instance of discount calculator
+        //    // assume sales price as 50
+
+        //    var discCalcr = new DiscountCalculator();
+        //    decimal salesAmount = 200;
+
+
+        //    //act
+
+        //    var finalPrice = discCalcr.CalculateTheFinalPrice(salesAmount);
+
+
+        //    //assert
+
+        //    Assert.Equal(180, finalPrice);
+
+        //}
+
+        [Theory]
+        [InlineData(200, 180)]
+        [InlineData(300, 270)]
+        [InlineData(400, 360)]
+
+        public void salesBetween100_and_500_ShouldHave_10_Discount(decimal salesAmount, decimal expected)
+        {
+            //assign or arrange
+            // need a class for dicount calculator and create new instance of discount calculator
+            // assume sales price as 50
+
+            var discCalcr = new DiscountCalculator();
+            //decimal salesAmount = 200;
+
+
+            //act
+
+            var finalPrice = discCalcr.CalculateTheFinalPrice(salesAmount);
+
+
+            //assert
+
+            Assert.Equal(expected, finalPrice);
+
+        }
     }
 }
