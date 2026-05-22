@@ -115,6 +115,88 @@ namespace EmploymentTest
             action.Should().Throw<ArgumentNullException>();
 
         }
+
+
+
+
+        #endregion
+
+        #region properties
+
+        // Firstname changed via property
+        // Baljit Kaur
+
+        [Fact]
+
+        public void Directly_Change_First_Name_via_Property()
+        {
+            //arrange
+
+            string expectedFirstName = "Baljeet";
+            //since we are trying to use the property of an instance.
+            //  one needs to have an instance in the first place.
+
+            Person sut = new Person("Baljit", "Kaur", null, null);
+
+            // act
+
+            sut.FirstName = "Baljeet";
+
+            // assert
+
+            sut.FirstName.Should().Be(expectedFirstName);
+
+
+        }
+
+        [Fact]
+
+        public void Directly_Change_Last_Name_via_Property()
+        {
+            //arrange
+
+            string expectedLastName = "Kaur";
+            //since we are trying to use the property of an instance.
+            //  one needs to have an instance in the first place.
+
+            Person sut = new Person("Baljit", "Kr", null, null);
+
+            // act
+
+            sut.LastName = "Kaur";
+
+            // assert
+
+            sut.LastName.Should().Be(expectedLastName);
+
+
+        }
+
+
+        //does the full name return the name in the instance
+        [Fact]
+        public void Retreive_Full_Name()
+        {
+            //Arrange
+            string expectedFullName = "Kaur, Baljeet";
+            //since we are trying to use the property of an instance.
+            //  one needs to have an instance in the first place.
+            Person sut = new Person("Baljeet", "Kaur", null, null);
+
+            //Act
+            //you could retreive the full name into a local string and use
+            //  the local string in the Assert
+            //you could move the creation of the instance from Arrange to Act
+            //  to have something in Act
+            //you might not need an Act
+            //string fullname = sut.FullName();
+
+            //Assert
+            //fullname.Should().Be(expectedFullName);
+            sut.FullName.Should().Be(expectedFullName);  //an have no Act code
+        }
+
+
         #endregion
 
 
