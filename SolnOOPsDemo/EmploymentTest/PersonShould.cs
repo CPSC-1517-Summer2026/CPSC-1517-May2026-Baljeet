@@ -64,6 +64,61 @@ namespace EmploymentTest
 
         #endregion
 
+
+        #region Invalid Valid tests
+        //the second test annotation used is called [Theory]
+        //it will execute n number of times as a loop
+        //n is determind by the number [InlineData()] annotations following the [Theory]
+        //to setup the test header, you must include a parameter in a parameter list
+        //  one for each value in the InlineData set of values
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("     ")]
+
+        public void Throw_Exception_Creating_Instance_Missing_FirstName(string testvalue)
+        {
+            // arrange
+            //for this test, no instance is expected to be created.
+            //because the firstname is invalid, an exception is to be thrown
+            //  thus, no instance to be created to be tested
+
+            // act 
+            Action action = () => new Person(testvalue, "Kaur", null, null);
+
+            // assert
+
+            action.Should().Throw<ArgumentNullException>();
+
+        }
+
+        //public void Throw_Exception_Creating_Instance_Missing_LastName(string testvalue)
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("     ")]
+
+        public void Throw_Exception_Creating_Instance_Missing_LastName(string testvalue)
+        {
+            // arrange
+            //for this test, no instance is expected to be created.
+            //because the Laststname is invalid, an exception is to be thrown
+            //  thus, no instance to be created to be tested
+
+            // act 
+            Action action = () => new Person("Baljeet", testvalue, null, null);
+
+            // assert
+
+            action.Should().Throw<ArgumentNullException>();
+
+        }
+        #endregion
+
+
+
         #region Testing Methods
         // add new Employment test method
 
