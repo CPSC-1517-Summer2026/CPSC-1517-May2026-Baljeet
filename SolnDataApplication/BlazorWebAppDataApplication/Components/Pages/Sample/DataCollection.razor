@@ -1,0 +1,87 @@
+﻿@page "/datacollection"
+@using OOPsDemo
+@rendermode InteractiveServer
+<h3>DataCollection</h3>
+
+<h4> Write data to CSV file</h4>
+
+<blockquote>
+    This component will demonstrate how your page can handle validation of data input,
+    showing validation messages when you have a number of controls for data entry. This
+    component will validate the local controls and create any validation messages for
+    invalid data. The messages can be collected using various techniques such as: List or
+    Dictionary.
+</blockquote>
+
+@* create input controls to recieve Employment data *@
+
+<fieldset>
+    <div>
+        <label for="title"> Position Title :  </label>
+        <input id="title" type="text" @bind="employmentTitle" />
+    </div>
+
+    <div>
+        <label for="startdate"> Position Start Date :  </label>
+        <input id="startdate" type="date" @bind="empStartDate" />
+
+    </div>
+
+    <div>
+        <label for="years"> Years :  </label>
+        <input id="years" type="number" @bind="empYears" />
+    </div>
+
+    <div>
+        <label for="level"> Supervisory Level :  </label>
+        <select id="level" @bind="empLevel" >
+        @foreach ( var item in Enum.GetValues(typeof(SupervisoryLevel)))
+            {
+                //each Enum will consider the value as a string
+                //the value attribute is the value returned when a choice has been made
+                //the string between the opening and closing tag will be displayed to the user
+                <option value="@item"> @item </option>
+
+            }
+            
+        </select>
+
+    </div>
+
+    <br />
+    <div>
+        <button type="submit" @onclick="Data_Collection">Collect </button>
+        &nbsp;&nbsp;
+        <button type="submit" @onclick="Clear"> Clear </button>
+    </div>
+    
+</fieldset>
+
+@code {
+    private string feedbackMessage;
+    private Dictionary<string, string> errorDictionary = new();
+    // variables to store Employment values entered by user
+
+    private string employmentTitle;
+    private DateTime empStartDate;
+    private double empYears;
+    private SupervisoryLevel empLevel;
+
+    // define Methods
+
+    public void Clear()
+    {
+        feedbackMessage = "";
+        errorDictionary.Clear();
+        employmentTitle = "";
+        empStartDate = DateTime.Today;
+        empLevel = SupervisoryLevel.Entry;
+        empYears = 0;
+
+    }
+
+    public void Data_Collection()
+    {
+        feedbackMessage = "starting with data collection";
+    }
+}
