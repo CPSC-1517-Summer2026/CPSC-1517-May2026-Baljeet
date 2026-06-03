@@ -1,0 +1,50 @@
+﻿@page "/sample"
+@rendermode InteractiveServer
+<PageTitle> Sample</PageTitle>
+<h1> Sample Component</h1>
+<p> We can add HTML elements based on our need. Design your page the way User should see </p>
+<p> @feedback </p>
+<button class="btn btn-primary" @onclick="MessageDisplay"> Display Message</button>
+<br />
+
+@* Add current date on page as the page loads by ovveriding onInitialized life cycle method *@
+<h2> Display Current Date and Timestamp</h2>
+<b> @_displayDate</b>
+<br />
+@* Add an exmple for twao way data binding *@
+
+<label for="dataitem"> 
+    <input type="text" @bind="inputValue" placeholder="Enter a String value"/>
+</label>
+<br />
+
+<button class="btn btn-primary" type="submit" @onclick="DataInput">Display Data</button>
+
+@code {
+    private string feedback = "";
+    private int counter = 0;
+    // add date variable to display current date (one way binding)
+    private string _displayDate;
+    // exnmple two way binding
+    private string inputValue;
+
+    private void MessageDisplay()
+    {
+
+        feedback = $" Someone clicked the message button {counter++} time ";
+    }
+
+    protected override void OnInitialized()
+    {
+        _displayDate = DateTime.Now.ToString();
+        base.OnInitialized();
+
+    }
+
+    private void DataInput()
+    {
+        // data entered in input control will store value into local variable/
+        feedback = $" You Entered input value as {inputValue}";
+    }
+
+}
