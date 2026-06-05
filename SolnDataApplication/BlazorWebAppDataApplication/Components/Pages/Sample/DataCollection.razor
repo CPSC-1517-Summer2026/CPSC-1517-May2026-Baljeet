@@ -103,6 +103,14 @@
     private Employment employment = null;
 
     //
+    //injected services into your application
+    //the declaration needs to be coded as a property, typically an auto-implemented property
+    //this variable is required if you are using property injection
+    //  for services available from the system which are not normally included
+    //  for use to your application
+    //this service collection will allow us to find the top of your application
+    [Inject]
+    public IWebHostEnvironment webHostEnvironment { get; set; }
 
     // define Methods
 
@@ -145,17 +153,79 @@
         if (errorDictionary.Count == 0)
         {
             feedbackMessage = " Good Data";
+            //if you are using a class to collect and hold your data
+            //      you need to be concerned with how the class coding handles
+            //      any errors in creating or processing code within the class
+            //this normally means some type of try/catch processing
 
             try
             {
+                // create an instance of Employment to use to write to the data file
+                //the data file record will use the ToString() of Employment
+                //(Note: you could manually in this method create the concatenated string for
+                //      writing)
+                //Remember if an error occurs while creating your instance, the instance will
+                //  throw an exception; which should be caught by the catches below.
                 employment = new Employment(employmentTitle, empLevel, empStartDate, empYears);
 
+
+
+                //write the class data as a string to a csv text file
+                // required:
+                // a) know the location of the file (name)
+                // b) the technique to use in writing to the file
+                //    there are several ways to write to the file
+                //      a) StreamWriter/StreamReader
+                //      b) using the System.IO.File methods
+                //           (handles the streaming of the data)
+
+                //there are a couple of ways to refer to your file and its path
+                //  i) obtain the root path of your application using an injection
+                //      service called IWebHostEnvironment via property injection (see variables)
+                //  ii) use relative addressing starting a the top of your application (see report page)
+
+                string appPath = webHostEnvironment.ContentRootPath;
+
+                //WARNING: when you use the System.IO.File you MUST use the
+                //          fully qualified naming to the class method you wish
+                //          to use.
+                //          Fully qualified naming includes namespace.methodOrProperty
+                //         you can not get by just using a reference to the
+                //           namespace at the top of your code (using System.IO;)
+
+                //write the data from the employment instance (ToString) as a line to the csv file
+                //since the string does not contain a line feed character, we will need to concatenate
+                //  the character (\n)
+                //---------------------------------------
                 // convert employment obj into string
 
-                string rline = $"{employment.ToString()}";
-                feedbackMessage = rline;
+                string rline = $"{employment.ToString()}\n";
+                // define full path for your file with file name
+
+                string csvFilePathName = $"{appPath}/Data/Employments.csv";
+
+
+                //the System.IO.File method will be AppendAllText(filepathname,string)
+                // AppendAllText will
+                //   a) create the file if it does not exist
+                //   b) opens
+                //   c) writes the text
+                //   d) closes
+                //,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,
+                System.IO.File.AppendAllText(csvFilePathName, rline);
+
+                //give the user a feed back message that indicates the success or failure
+                //  of the event
+                //here it would be a success message
+                //------------
+
+                feedbackMessage = "Data has been saved to CSV file ";
+                //feedbackMessage = $"Employment record is: {rline} and app path is :{appPath}";
             }
-            catch{}
+            catch( Exception ex)
+            {
+                errorDictionary.Add("Data Missing", " Data was not saved");
+            }
 
 
 
