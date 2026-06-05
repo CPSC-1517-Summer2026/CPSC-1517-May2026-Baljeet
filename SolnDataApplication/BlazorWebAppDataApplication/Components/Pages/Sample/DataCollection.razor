@@ -3,7 +3,7 @@
 @rendermode InteractiveServer
 <h3>DataCollection</h3>
 
-<h4> Write data to CSV file</h4>
+<h4> Write Employment data to CSV file</h4>
 
 <blockquote>
     This component will demonstrate how your page can handle validation of data input,
@@ -12,6 +12,33 @@
     invalid data. The messages can be collected using various techniques such as: List or
     Dictionary.
 </blockquote>
+
+
+@* Display Feedback Messages *@
+@if (feedbackMessage.Length > 0 )
+{
+    <div class=" alert alert-info"> 
+        @feedbackMessage
+   </div>
+}
+
+@* Display Error Messages *@
+
+@if (errorDictionary.Count > 0)
+{
+    <div class=" alert alert-danger">
+
+        <p> Please fix the following errors:</p>
+        <ul> 
+            @foreach (var message in errorDictionary.Values)
+            {
+                <li> @message</li>
+            }
+        </ul>
+        
+    </div>
+}
+
 
 @* create input controls to recieve Employment data *@
 
@@ -29,7 +56,7 @@
 
     <div>
         <label for="years"> Years :  </label>
-        <input id="years" type="number" @bind="empYears" />
+        <input id="years" type="number" @bind="empYears" step="0.1" />
     </div>
 
     <div>
@@ -58,14 +85,24 @@
 </fieldset>
 
 @code {
-    private string feedbackMessage;
-    private Dictionary<string, string> errorDictionary = new();
+    // All variables used in the program should be declared here
+    private string feedbackMessage = "";
+    private Dictionary<string, string> errorDictionary = new(); // name, explaination 
     // variables to store Employment values entered by user
 
     private string employmentTitle;
     private DateTime empStartDate;
     private double empYears;
     private SupervisoryLevel empLevel;
+
+    //one could use a class definition as the receiving variable
+    //       fields for your controls
+    //if you use this technique then you would need to declare
+    //  your variable with a new (); so that there is an
+    //  instance in existance.
+    private Employment employment = null;
+
+    //
 
     // define Methods
 
@@ -82,6 +119,49 @@
 
     public void Data_Collection()
     {
-        feedbackMessage = "starting with data collection";
+        feedbackMessage = "";
+        errorDictionary.Clear();
+
+        // apply validation before we use local variables to create Employment object
+
+        // check for Title
+
+        if ( string.IsNullOrWhiteSpace(employmentTitle))
+        { errorDictionary.Add("Title", "Title is required");
+        }
+
+        // check for start date : it should not be greater than current date
+
+        if (empStartDate > DateTime.Today.AddDays(1))
+        {
+            errorDictionary.Add("StartDate", "Start date can't be in future");
+        }
+
+        if (!Utilities.IsZeroOrPositive(empYears))
+        {
+            errorDictionary.Add("Years", "Years of Experience should be a positive value");
+        }
+
+        if (errorDictionary.Count == 0)
+        {
+            feedbackMessage = " Good Data";
+
+            try
+            {
+                employment = new Employment(employmentTitle, empLevel, empStartDate, empYears);
+
+                // convert employment obj into string
+
+                string rline = $"{employment.ToString()}";
+                feedbackMessage = rline;
+            }
+            catch{}
+
+
+
+
+        }
+
+
     }
 }

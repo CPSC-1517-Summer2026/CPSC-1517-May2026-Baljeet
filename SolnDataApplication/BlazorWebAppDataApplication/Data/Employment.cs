@@ -107,7 +107,7 @@ namespace OOPsDemo
         public SupervisoryLevel Level
         { 
             get { return _Level; }
-            set { _Level = value; }
+            private set { _Level = value; }
         
         }
 
