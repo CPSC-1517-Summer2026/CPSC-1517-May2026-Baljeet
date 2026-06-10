@@ -1,7 +1,10 @@
 ﻿@page "/report"
 <PageTitle> Tabular Report</PageTitle>
+@rendermode InteractiveServer
+
 <!-- add any additional namespaces-->
 @using OOPsDemo
+
 
 <h1> Employment History</h1>
 <h3>Scrolling Tabular Report</h3>
@@ -42,6 +45,8 @@
             }
         </ul>
     </div>
+}
+
 
     <!--
     display area
@@ -54,7 +59,32 @@
     c) collection physically exists and has records to display
     - the records should be display in the desire output format.
     -->
-}
+    <div class="row">
+        <div class="offset-3 col-md-6 overflow-scroll" style="height:350px;">
+            <table class="table table-striped">
+                <thead style="position:sticky; top:0; background-color:white;">
+                    <tr>
+                        <th>Title</th>
+                        <th>Level</th>
+                        <th>Start Date</th>
+                        <th>Years</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var empRow in employments)
+                    {
+                        <tr>
+                            <td>@empRow.Title</td>
+                            <td>@empRow.Level</td>
+                            <td>@empRow.StartDate.ToShortDateString()</td>
+                            <td>@empRow.Year</td>
+                        </tr>
+                    }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 
 @code {
 
@@ -62,7 +92,9 @@
     private string feedbackMessage = "";
     private Dictionary<string, string> errorDictionary = new(); // name, explaination
 
-
+    //use the following variable to hold the data from a records of the file
+    Employment employment = null;
+    List<Employment> employments = null;
     // oninitialized
 
     protected override void OnInitialized()
@@ -81,6 +113,7 @@
         //clear out old messages
         feedbackMessage = "";
         errorDictionary.Clear();
+        //List<Employment> employments = new();
 
         //there are a couple of ways to refer to your file and its path
         //  i) obtain the root path of your application using an injection
@@ -102,7 +135,27 @@
             if (System.IO.File.Exists(fileName))
             {
                 userData = System.IO.File.ReadAllLines(fileName);
+
+
+                foreach (string line in userData)
+                {
+                    employment = Employment.Parse(line);
+
+                    employments.Add(employment);
+                }
+
+                feedbackMessage = "Success";
+
             }
+            else
+            {
+                //file does not exist
+                throw new Exception($"File {fileName} does not exist");
+            }
+        }
+        catch(Exception Ex)
+        {
+            errorDictionary.Add("System Error", "Could not read from file");
         }
     }
 

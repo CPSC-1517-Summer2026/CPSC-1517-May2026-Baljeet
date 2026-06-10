@@ -267,6 +267,7 @@ namespace OOPsDemo
             }
             else
             {
+               // return new Employment(datavalues[0], (SupervisoryLevel)Enum.Parse(typeof(SupervisoryLevel), datavalues[1], DateTime.Parse(datavalues[2]), double.Parse(datavalues[3]));
                 return new Employment(datavalues[0],
                                     (SupervisoryLevel)Enum.Parse(typeof(SupervisoryLevel), datavalues[1]),
                                     DateTime.Parse(datavalues[2]),
