@@ -1,0 +1,110 @@
+﻿@page "/report"
+<PageTitle> Tabular Report</PageTitle>
+<!-- add any additional namespaces-->
+@using OOPsDemo
+
+<h1> Employment History</h1>
+<h3>Scrolling Tabular Report</h3>
+
+<div class="row">
+    <div class="offset-1 col-md-10">
+        <blockquote style="background-color:lightyellow">
+            <p>
+                This component will demonstrate file IO reading of a text (csv) file. The access to the
+                file path will use relative addressing. This component will read all records from the
+                file, create a collection based on a class (Employment), and display the collection
+                in a tabular control (table). This table will demonstrate scrolling.
+            </p>
+
+        </blockquote>
+    </div>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(feedbackMessage))
+{
+    <div class="alert alert-success">
+        <p>@feedbackMessage</p>
+    </div>
+}
+
+@if (errorDictionary.Count > 0)
+{
+    <div class="alert alert-danger">
+        <p>Please fix the following issues:</p>
+        <ul>
+            @foreach (var error in errorDictionary)            {
+                <!--
+                this is a List collection there is only
+                one component, the string
+                therefore you would NOT need the .Value
+                -->
+                <li>@error</li>
+            }
+        </ul>
+    </div>
+
+    <!--
+    display area
+
+    3 possible scenarios
+    a) no physical collection has been created
+    - no table should be display on the page
+    b) collection physically exists but is empty
+    - a message should be displayed to the user
+    c) collection physically exists and has records to display
+    - the records should be display in the desire output format.
+    -->
+}
+
+@code {
+
+    // All variables used in the program should be declared here
+    private string feedbackMessage = "";
+    private Dictionary<string, string> errorDictionary = new(); // name, explaination
+
+
+    // oninitialized
+
+    protected override void OnInitialized()
+    {
+        //One could code the reading of the file directly in this method
+        //one could also call a different method that does the reading
+        //  if one codes the separate method, that method could be used as an event method
+        Reading();
+        base.OnInitialized();
+    }
+
+    // inser methods
+
+    private void Reading()
+    {
+        //clear out old messages
+        feedbackMessage = "";
+        errorDictionary.Clear();
+
+        //there are a couple of ways to refer to your file and its path
+        //  i) obtain the root path of your application using an injection
+        //      service called IWebHostEnvironment via property injection (see variables)
+        //  ii) use relative addressing starting a the top of your application
+
+        // refer to the current relative path for application
+
+        string filePathName = @"./Data/";
+
+        string fileName = $"{filePathName}Employments.csv";
+
+
+        Array userData = null;
+
+        try
+        {
+
+            if (System.IO.File.Exists(fileName))
+            {
+                userData = System.IO.File.ReadAllLines(fileName);
+            }
+        }
+    }
+
+
+}
