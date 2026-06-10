@@ -59,8 +59,22 @@
     c) collection physically exists and has records to display
     - the records should be display in the desire output format.
     -->
+
+ @if (employments == null)
+ {
+    <!-- a -->
+    <p>Open an employment history file.</p>
+}
+else if ( employments.Count() == 0)
+{
+    <!-- b -->
+    <p>No data in the current employment history file.</p>
+}
+else
+{
+    <!-- c -->
     <div class="row">
-        <div class="offset-3 col-md-6 overflow-scroll" style="height:350px;">
+        <div class="offset-3 col-md-6 overflow-scroll" style="height:250px;">
             <table class="table table-striped">
                 <thead style="position:sticky; top:0; background-color:white;">
                     <tr>
@@ -85,7 +99,7 @@
     </div>
 </div>
 
-
+}
 @code {
 
     // All variables used in the program should be declared here
@@ -136,7 +150,7 @@
             {
                 userData = System.IO.File.ReadAllLines(fileName);
 
-
+                employments = new List<Employment>();
                 foreach (string line in userData)
                 {
                     employment = Employment.Parse(line);
