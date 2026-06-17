@@ -114,6 +114,19 @@
 
     // define Methods
 
+
+    private Exception GetInnerException(Exception ex)
+    {
+        //drill down into your Exception until there are no more inner exceptions
+        //at this point you will have the "real" reason for the error
+        while (ex.InnerException != null)
+        {
+            ex = ex.InnerException;
+        }
+
+        return ex; // returns the real actual exception
+    }
+
     public void Clear()
     {
         feedbackMessage = "";
@@ -222,6 +235,16 @@
                 feedbackMessage = "Data has been saved to CSV file ";
                 //feedbackMessage = $"Employment record is: {rline} and app path is :{appPath}";
             }
+
+            catch (ArgumentNullException ex)
+            {
+                errorDictionary.Add("Missing Data", $"Missing data: {GetInnerException(ex).Message}");
+            }
+            catch (ArgumentException ex)
+            {
+                errorDictionary.Add("Invalid Data", $"Invalid data: {GetInnerException(ex).Message}");
+            }
+
             catch( Exception ex)
             {
                 errorDictionary.Add("Data Missing", " Data was not saved");

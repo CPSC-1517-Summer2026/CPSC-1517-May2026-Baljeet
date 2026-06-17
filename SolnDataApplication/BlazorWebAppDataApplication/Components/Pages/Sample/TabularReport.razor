@@ -120,7 +120,21 @@ else
         base.OnInitialized();
     }
 
-    // inser methods
+    // insert methods
+
+    // 1. capture detailed error messages
+
+    private Exception GetInnerException (Exception ex)
+    {
+        //drill down into your Exception until there are no more inner exceptions
+        //at this point you will have the "real" reason for the error
+        while(ex.InnerException != null)
+        {
+            ex = ex.InnerException;
+        }
+
+        return ex; // returns the real actual exception
+    }
 
     private void Reading()
     {
@@ -167,9 +181,22 @@ else
                 throw new Exception($"File {fileName} does not exist");
             }
         }
-        catch(Exception Ex)
+
+        catch (ArgumentNullException ex)
         {
-            errorDictionary.Add("System Error", "Could not read from file");
+            errorDictionary.Add("Missing Data", $"Missing data: {GetInnerException(ex).Message}");
+        }
+        catch(ArgumentException ex)
+        {
+            errorDictionary.Add("Invalid Data", $"Invalid data: {GetInnerException(ex).Message}");
+        }
+        catch (FormatException ex)
+        {
+            errorDictionary.Add("Record Format Error", $"Format error: {GetInnerException(ex).Message}");
+        }
+        catch(Exception ex)
+        {
+            errorDictionary.Add("System Error", $"Error Message is: {ex.Message}");
         }
     }
 
