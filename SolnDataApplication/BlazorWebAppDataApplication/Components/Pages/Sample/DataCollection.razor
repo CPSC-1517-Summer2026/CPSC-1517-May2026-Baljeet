@@ -77,9 +77,13 @@
 
     <br />
     <div>
-        <button type="submit" @onclick="Data_Collection">Collect </button>
+        <button type="submit" class="btn btn-outline-secondary rounded-pill" @onclick="Data_Collection" style="width:155px;">Collect </button>
         &nbsp;&nbsp;
-        <button type="submit" @onclick="Clear"> Clear </button>
+        <button type="submit" class="btn btn-outline-secondary rounded-pill" @onclick="Clear" style="width:155px;"> Clear </button>
+        <button type="submit" class="btn btn-outline-secondary rounded-pill"
+                @onclick="OnGoToReport" style="width:155px;">
+            Go To Report
+        </button>
     </div>
     
 </fieldset>
@@ -112,6 +116,32 @@
     [Inject]
     public IWebHostEnvironment webHostEnvironment { get; set; }
 
+    //this injection is for being able to go grom page A to page B by code
+    [Inject]
+    public NavigationManager navigationManager { get; set; }
+
+    //injected services into your application
+    //the declaration needs to be coded as a property, typically an auto-implemented property
+    //WARNING: you may get a exception on the declaration (red line), if so place a using
+    //  clause at the top of this file (using Microsoft.JSInterop;)
+    [Inject]
+    private IJSRuntime jsRuntime { get; set; }
+
+
+    //Components
+    // jsRuntime
+
+    // Represents Blazor's JavaScript Interop service. It allows C# code to call JavaScript functions.
+
+    // InvokeAsync<bool>() 
+    // Calls a JavaScript function and expects a Boolean result.
+
+    // Syntax:
+
+    // await jsRuntime.InvokeAsync<ReturnType>(
+    //     "JavaScriptFunctionName",
+    //     parameters);
+
     // define Methods
 
 
@@ -127,14 +157,22 @@
         return ex; // returns the real actual exception
     }
 
-    public void Clear()
+    public async Task Clear()
     {
-        feedbackMessage = "";
-        errorDictionary.Clear();
-        employmentTitle = "";
-        empStartDate = DateTime.Today;
-        empLevel = SupervisoryLevel.Entry;
-        empYears = 0;
+        //issue a prompt dialogue to the user to obtain confirmation of the action
+        //create your message for the dialogue box into a generic object[]
+        object[] messageline = new object[]
+        {"Clearing will lose all unsaved data. Are you sure you wish to continue?"};
+
+        if (await jsRuntime.InvokeAsync<bool>("confirm", messageline))
+        {
+            feedbackMessage = "";
+            errorDictionary.Clear();
+            employmentTitle = "";
+            empStartDate = DateTime.Today;
+            empLevel = SupervisoryLevel.Entry;
+            empYears = 0;
+        }
 
     }
 
@@ -251,10 +289,29 @@
             }
 
 
-
-
         }
 
 
     }
+
+
+    private async Task OnGoToReport()
+    {
+        //clear out any old messages
+        feedbackMessage = "";
+
+        //issue a prompt dialogue to the user to obtain confirmation of the action
+        //create your message for the dialogue box into a generic object[]
+        object[] messageline = new object[]
+        {"Leaving the page will lose all unsaved data. Are you sure you wish to continue?"};
+
+        if (await jsRuntime.InvokeAsync<bool>("confirm", messageline))
+        {
+            //use the property for the service
+            //pages within the web app are known by their routing name
+            //the URI can be the routing name of your desired page.
+            navigationManager.NavigateTo("report");
+        }
+    }
+}
 }
