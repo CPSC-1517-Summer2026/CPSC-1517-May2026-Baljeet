@@ -64,8 +64,28 @@
     <div class="col-md-6">
         <!-- this column will hold the query input controls and buttons-->
         <p> Area to provide input from user: text box or drop down list</p>
-        
+        <label for="regionid">Enter a region id:</label>&nbsp;&nbsp;
+        <input id="regionid" type="number" @bind="entryarg"
+               placeholder="enter region id" style="width:100px;" />&nbsp;&nbsp;
+        <button type="submit" class="btn btn-outline-secondary rounded-pill"
+                @onclick="GetByID">
+            Fetch By Entry
+        </button>
+                   
         <br /><br />
+
+        <label for="selectid">Select a region:</label>&nbsp;&nbsp;
+        <select id="selectid" style="width:100px;" @bind = "selectarg">
+            <option value="0">... select</option>
+            @foreach (var item in regions)
+            {
+                <option value="@item.RegionId">@item.RegionDescription</option>
+            }
+        </select>&nbsp;&nbsp;
+        <button type="submit" class="btn btn-outline-secondary rounded-pill"
+                @onclick="GetBySelection">
+            Fetch By Selection
+        </button>
         
     </div>
     <div class="col-md-6">
@@ -74,13 +94,27 @@
                 has something to display
         -->
         <p> Area to display results based on the input given by user</p>
+        <br /><br />
+        @if (region != null)
+        {
+            <p>Region ID: @region.RegionId</p>
+            <p>Region Description: @region.RegionDescription</p>
+        }
+        @if (region == null)
+        {
+            <p>Region value is null</p>
+        }
     </div>
 </div>
 
 @code {
 
     private string feedBackMsg = "";
-    private List<string> errorMsgs = new List<string>();
+    private List<string> errorMsgs = new();
+
+    //variables for the input controls
+    private int entryarg = 0;
+    private int selectarg = 0;
 
     Region region = null;
     List<Region> regions = new();
@@ -97,6 +131,38 @@
         regions = _regionServices.Region_GetList();
         base.OnInitialized();
     }
+
+    // all methods to be used in page can be defined here
+
+    private void GetByID()
+    {
+        feedBackMsg = "";
+        errorMsgs.Clear();
+        region = null;
+
+        region = _regionServices.Region_GetByID(entryarg);
+
+        if (region == null)
+        {
+            feedBackMsg = $"There is no region data by the entered region argument value {entryarg}";
+        }
+    }
+
+    private void GetBySelection()
+    {
+        feedBackMsg = "";
+        errorMsgs.Clear();
+        region = null;
+
+        region = _regionServices.Region_GetByID(selectarg);
+
+        if (region == null)
+        {
+            feedBackMsg = $"There is no region data by the entered region argument value {entryarg}";
+        }
+
+    }
+
 
 
 }
