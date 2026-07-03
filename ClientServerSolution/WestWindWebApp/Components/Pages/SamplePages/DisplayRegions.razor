@@ -140,11 +140,26 @@
         errorMsgs.Clear();
         region = null;
 
-        region = _regionServices.Region_GetByID(entryarg);
-
-        if (region == null)
+        //validate the incoming argument value is correct
+        if (entryarg == 0)
         {
-            feedBackMsg = $"There is no region data by the entered region argument value {entryarg}";
+            errorMsgs.Add($"You must enter a valid region to query.");
+        }
+
+        //did you find any invalid data
+        if (errorMsgs.Count == 0)
+        {
+            //at this point data appears to be good
+            //consume a service and catch results
+            region = _regionServices.Region_GetByID(entryarg);
+            //check the results
+            if (region == null)
+            {
+                //since the select control is based on the database records
+                //  it is highly unlikely you will ever get this message
+                feedBackMsg = $"There is no region data for the selected region";
+            }
+
         }
     }
 
@@ -154,13 +169,27 @@
         errorMsgs.Clear();
         region = null;
 
-        region = _regionServices.Region_GetByID(selectarg);
-
-        if (region == null)
+        //validate the incoming argument value is correct
+        if (selectarg == 0)
         {
-            feedBackMsg = $"There is no region data by the entered region argument value {entryarg}";
+            errorMsgs.Add($"You must select a region to query.");
         }
 
+        //did you find any invalid data
+        if (errorMsgs.Count == 0)
+        {
+            //at this point data appears to be good
+            //consume a service and catch results
+            region = _regionServices.Region_GetByID(selectarg);
+            //check the results
+            if (region == null)
+            {
+                //since the select control is based on the database records
+                //  it is highly unlikely you will ever get this message
+                feedBackMsg = $"There is no region data for the selected region";
+            }
+
+        }
     }
 
 
