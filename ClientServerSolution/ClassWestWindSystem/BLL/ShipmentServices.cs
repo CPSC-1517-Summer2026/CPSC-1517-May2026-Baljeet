@@ -38,6 +38,14 @@ namespace ClassWestWindSystem.BLL
         public List<Shipment> Shipment_GetByYearMonth(int year, int month)
         {
             // dates look like 2016-08-08
+            if (year < 1950 || year > DateTime.Today.Year)
+            {
+                throw new ArgumentException($"Invalid year {year}. Year must be between 1950 and today");
+            }
+            if (month < 1 || month > 12)
+            {
+                throw new ArgumentException($"Invalid month {month}. Month must be between 1 and 12");
+            }
 
             IEnumerable<Shipment> info = _context.Shipments.Where(s => s.ShippedDate.Year == year
                                             && s.ShippedDate.Month == month);

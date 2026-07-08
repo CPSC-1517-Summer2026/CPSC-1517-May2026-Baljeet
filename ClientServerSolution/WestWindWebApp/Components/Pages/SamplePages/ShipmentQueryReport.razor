@@ -62,7 +62,7 @@
             }
             else
             {
-                <div>
+                <div class="overflow-scroll" style="height:600px">
                     <table class="table table-striped">
                         <thead>
                             <tr>
@@ -108,6 +108,7 @@
     private List<Shipment> shipmentList = null;
 
     // consume service
+    [Inject]
     ShipmentServices _shipmentServices { get; set; }
 
     // onitialized method
@@ -138,18 +139,33 @@
         errorMsgs.Clear();
         shipmentList = null;
 
+
+        //validate the incoming argument values
+        if (yeararg < 1950 || yeararg > DateTime.Today.Year)
+        {
+            errorMsgs.Add($"Invalid year {yeararg}. Year must be between 1950 and today");
+        }
+        if (montharg < 1 || montharg > 12)
+        {
+            errorMsgs.Add($"Invalid month {montharg}. Month must be between 1 and 12");
+        }
+
         if (errorMsgs.Count == 0)
         {
+            //assume that the incoming values are good
+            //consume the service
+
+            //since the consumption could possible throw an exception
+            //  we need to use "user friendly error handling" techniques
             try
             {
                 shipmentList = _shipmentServices.Shipment_GetByYearMonth(yeararg, montharg);
             }
             catch (Exception ex)
             {
-                errorMsgs.Add($"System Error: {ex.Message}");
+                errorMsgs.Add($"System Error: {(ex).Message}");
             }
         }
-
     }
 
 }
