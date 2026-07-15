@@ -81,7 +81,7 @@
                                     <td>@item.ShipmentId</td>
                                     <td>@item.OrderId</td>
                                     <td>@item.ShippedDate</td>
-                                    <td>@item.ShipVia</td>
+                                    <td>@item.ShipViaNavigation?.CompanyName</td>
                                     <td>@item.FreightCharge</td>
                                 </tr>
                             }
@@ -106,10 +106,14 @@
 
     //variable that holds the query result dataset
     private List<Shipment> shipmentList = null;
+    private List<Shipper> shipperList = null;
 
     // consume service
     [Inject]
     ShipmentServices _shipmentServices { get; set; }
+
+    [Inject]
+    ShipperServices _shipperServices { get; set; }
 
     // onitialized method
 
@@ -128,6 +132,7 @@
 
         //yeararg = DateTime.Today.Year;
         //montharg = DateTime.Today.Month;
+        shipperList = _shipperServices.Shipper_ShipperShipmentList();
         base.OnInitialized();
     }
 
