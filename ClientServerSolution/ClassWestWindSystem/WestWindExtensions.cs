@@ -106,6 +106,35 @@ namespace ClassWestWindSystem
                 //  class method (see your Program.cs in your wb app)
                 return new ShipperServices(context);
             });
+
+
+            services.AddTransient<ProductServices>((serviceProvider) =>
+            {
+                //obtain the context information already registered in IServerCollections above
+                var context = serviceProvider.GetService<WestWindContext>();
+
+                //create an instance of the service class and register the said class
+                //  in IServiceCollection
+                //once the class has been registered, it can be used by ANY outside
+                //  source as long as the outside source has referenced the extension 
+                //  class method (see your Program.cs in your wb app)
+                return new ProductServices(context);
+            });
+
+            services.AddTransient<CategoryServices>((serviceProvider) =>
+            {
+                //obtain the context information already registered in IServerCollections above
+                var context = serviceProvider.GetService<WestWindContext>();
+
+                //create an instance of the service class and register the said class
+                //  in IServiceCollection
+                //once the class has been registered, it can be used by ANY outside
+                //  source as long as the outside source has referenced the extension 
+                //  class method (see your Program.cs in your wb app)
+                return new CategoryServices(context);
+            });
+
+
         }
 
        
