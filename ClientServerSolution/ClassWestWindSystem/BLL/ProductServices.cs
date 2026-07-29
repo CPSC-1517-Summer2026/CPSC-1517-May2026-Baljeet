@@ -1,5 +1,6 @@
 ﻿using ClassWestWindSystem.DAL;
 using ClassWestWindSystem.Entity;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -156,7 +157,87 @@ namespace ClassWestWindSystem.BLL
             return item.ProductId;
         }
 
+        // product update
 
+        public int Product_Update(Product item)
+        {
+
+           //do any validation needed within the service method
+
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Add not done.");
+            }
+
+            //does the pkey exist?
+            //if the pkey does not exist then no update will happen
+            //check to see if an update to the expected record can be done
+            //   by looking for the pkey
+            if (!_context.Products.Any(x => x.ProductId == item.ProductId))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+
+
+
+
+            //are there any other business rules to check
+            //YOU MAY NOT HAVE ANY OTHER BUSINESS RULES TO CHECK!!!!!!!!!!!!!!!!!!!
+            //An example of business rules (product duplication) for this demo could be that the product
+            //  a) is from the same supplier
+            //  b) with the same product name
+            //  c) having the same quantity per unit
+
+            bool exists = false; //flag
+
+            //the method does NOT need the actual record, JUST needs to know if the condition exists: .Any(...)
+            exists = _context.Products
+                            .Any(x => x.SupplierId == item.SupplierId
+                                   && x.ProductName.Equals(item.ProductName)
+                                   && x.QuantityPerUnit.Equals(item.QuantityPerUnit)
+                                   && x.ProductId.Equals(item.ProductId));
+
+            //check the results of your complex business rule
+            if (exists)
+                throw new ArgumentException($"Product {item.ProductName} from " +
+                    $" {item.Supplier.CompanyName} of size {item.QuantityPerUnit} " +
+                    $" already on file.");
+
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //if your field is an IDENTITY key then override any value in the field 
+            //set the pkey value to zero
+            //prevents an IDENTITY_INSERT flag problem from occuring
+            //item.ProductId = 0;
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> updating = _context.Entry(item);
+
+            updating.State=  Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //ANY annotation validation is in your entity, it is executed to validate the data
+            //  going to the database
+            //if there is a validation problem then an exception is thrown and processing of
+            //  the commit is terminated (transaction RollBack)
+
+            return _context.SaveChanges();
+
+            //AFTER the successful commit to the database, your new product id
+            //  primary key is available to you via the item.ProductID
+            //Optionally, you could return this value to the calling process
+
+            //return item.ProductId;
+        }
 
 
     }
