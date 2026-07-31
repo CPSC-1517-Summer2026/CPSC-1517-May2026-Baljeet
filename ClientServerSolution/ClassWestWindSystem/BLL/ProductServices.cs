@@ -295,5 +295,145 @@ namespace ClassWestWindSystem.BLL
 
         }
 
+        public int Product_LogicalDelete(Product item)
+        {
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Removal not done.");
+            }
+
+            //does the product still exist on the database
+            //the product could have been physically deleted while
+            //  the user was doing some processing with the record in question
+
+            //even though this is an update, one technique is to use the existing
+            //  data already on the database
+            //the only value that needs to be altered is the Discontinue flag
+            //if other data was to be altered, then the user should first do the update
+            //  then do the discontinue
+
+            //remember, FirstOrDefault will either
+            //  a) return the requested record if found
+            //  b) return a null
+            Product exists = null;
+
+            //retreive the current product record from the database
+            exists = _context.Products
+                            .FirstOrDefault(x => x.ProductId == item.ProductId);
+
+            //test if the record exists
+            if (exists == null)
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+            //for the logical delete
+            //  set the appropriate field to the value indicating "delete"
+            //this code is not relying on the user to have set the appropriate
+            //  field on the form
+            //  note: no OTHER field on the current record is altered
+            exists.Discontinued = true;
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+            EntityEntry<Product> updating = _context.Entry(item);
+
+            updating.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //ANY annotation validation is in your entity, it is executed to validate the data
+            //  going to the database
+            //if there is a validation problem then an exception is thrown and processing of
+            //  the commit is terminated (transaction RollBack)
+
+            return _context.SaveChanges();
+
+            //AFTER the successful commit to the database, your new product id
+            //  primary key is available to you via the item.ProductID
+            //Optionally, you could return this value to the calling process
+
+            //return item.ProductId;
+
+
+
+        }
+
+        public int Product_Activate(Product item)
+        {
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Product Activation not done.");
+            }
+
+            //does the product still exist on the database
+            //the product could have been physically deleted while
+            //  the user was doing some processing with the record in question
+
+            //even though this is an update, one technique is to use the existing
+            //  data already on the database
+            //the only value that needs to be altered is the Discontinue flag
+            //if other data was to be altered, then the user should first do the update
+            //  then do the discontinue
+
+            //remember, FirstOrDefault will either
+            //  a) return the requested record if found
+            //  b) return a null
+            Product exists = null;
+
+            //retreive the current product record from the database
+            exists = _context.Products
+                            .FirstOrDefault(x => x.ProductId == item.ProductId);
+
+            //test if the record exists
+            if (exists == null)
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                    $" of size {item.QuantityPerUnit} " +
+                    $" is not on file. Check for the product again");
+
+            //for the logical delete
+            //  set the appropriate field to the value indicating "delete"
+            //this code is not relying on the user to have set the appropriate
+            //  field on the form
+            //  note: no OTHER field on the current record is altered
+            exists.Discontinued = false;
+
+            //after all business rules have been passed, you can assume the 
+            //  data is good to be placed on the database
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+            EntityEntry<Product> updating = _context.Entry(item);
+
+            updating.State = Microsoft.EntityFrameworkCore.EntityState.Modified;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //ANY annotation validation is in your entity, it is executed to validate the data
+            //  going to the database
+            //if there is a validation problem then an exception is thrown and processing of
+            //  the commit is terminated (transaction RollBack)
+
+            return _context.SaveChanges();
+
+            //AFTER the successful commit to the database, your new product id
+            //  primary key is available to you via the item.ProductID
+            //Optionally, you could return this value to the calling process
+
+            //return item.ProductId;
+
+
+
+        }
+
     }
 }

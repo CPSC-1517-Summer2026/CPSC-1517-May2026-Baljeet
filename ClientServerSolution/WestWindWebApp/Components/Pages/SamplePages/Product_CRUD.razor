@@ -494,11 +494,154 @@ this is optional
 
     // Logically Discontinue a Product by setting up the flag
     private void OnDeleteLogical()
-    { }
-    
+    {
+        //THIS DELETE IS A LOGICAL DELETE THEREFORE VERY SIMILAR TO AN UPDATE!!!!!!!!!!!!
+
+        //clear old messages
+        feedBackMessage = "";
+        validationMessageStore.Clear(); //this replaces the old List<string> errorMsgs
+
+        try
+        {
+            //all work against the DB is done in a separate project and/or class
+
+            //the first test is to check to see if there are ANY errors already caught
+            //  by the form using the DataAnnotationsValidator?
+            // if (editContext.Validate())
+            // {
+            //     //entering this code means that the DataAnnotation of your entity is satisfied
+
+            //     if (CurrentProduct.CategoryID == 0)
+            //     {
+            //         validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.CategoryID)),
+            //                                     "You must select a category");
+            //     }
+            //     if (CurrentProduct.SupplierID == 0)
+            //     {
+            //         validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.SupplierID),
+            //                                     "You must select a supplier");
+            //     }
+            //     if (editContext.GetValidationMessages().Any())
+            //     {
+            //         //notify the editContext that there has been a change to the Validation state
+            //         editContext.NotifyValidationStateChanged();
+            //     }
+            //     else
+            //     {
+            //the program assumes that the data is clean and can be further processed
+
+            //call the product services to receive the "good" data and "logically delete" the product on the database
+            // the returned value is the number of rows updated on the database
+            int rowsaffected = _productServices.Product_LogicalDelete(CurrentProduct);
+
+            //on a Delete, there are two possibilities
+            //a) a records(s) did get altered
+            //b) no record(s) were ACTUALLy altered AND the request did NOT abort
+            if (rowsaffected == 0)
+            {
+                feedBackMessage = $"Product {CurrentProduct.ProductName} (ID: {CurrentProduct.ProductId}) "
+                                + $" has not been discontinued. Check for product again.";
+            }
+            else
+            {
+                feedBackMessage = $"Product {CurrentProduct.ProductName} (ID: {CurrentProduct.ProductId}) has been discontinued.";
+            }
+        }
+        catch (ArgumentNullException ex)
+        {
+            //usually if an error occurs only ONE message will be executed
+            //You could setup a special error message string to display on your page
+            //  that is NOT the validationMessageStore and is NOT the feedBackMessage
+            //You could style this special error message string as an alert alert-danger
+            feedBackMessage = $"Missing Data: {(ex).Message}";
+        }
+        catch (ArgumentException ex)
+        {
+            feedBackMessage = $"Data Issue: {(ex).Message}";
+        }
+        catch (Exception ex)
+        {
+            feedBackMessage = $"System Error: {(ex).Message}";
+        }
+
+
+    }
+
     // Make the discontinued product available
     private void OnActivate()
-    {}
+    {
+        //THIS DELETE IS A LOGICAL DELETE THEREFORE VERY SIMILAR TO AN UPDATE!!!!!!!!!!!!
+
+        //clear old messages
+        feedBackMessage = "";
+        validationMessageStore.Clear(); //this replaces the old List<string> errorMsgs
+
+        try
+        {
+            //all work against the DB is done in a separate project and/or class
+
+            //the first test is to check to see if there are ANY errors already caught
+            //  by the form using the DataAnnotationsValidator?
+            // if (editContext.Validate())
+            // {
+            //     //entering this code means that the DataAnnotation of your entity is satisfied
+
+            //     if (CurrentProduct.CategoryID == 0)
+            //     {
+            //         validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.CategoryID)),
+            //                                     "You must select a category");
+            //     }
+            //     if (CurrentProduct.SupplierID == 0)
+            //     {
+            //         validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.SupplierID),
+            //                                     "You must select a supplier");
+            //     }
+            //     if (editContext.GetValidationMessages().Any())
+            //     {
+            //         //notify the editContext that there has been a change to the Validation state
+            //         editContext.NotifyValidationStateChanged();
+            //     }
+            //     else
+            //     {
+            //the program assumes that the data is clean and can be further processed
+
+            //call the product services to receive the "good" data and "logically delete" the product on the database
+            // the returned value is the number of rows updated on the database
+            int rowsaffected = _productServices.Product_Activate(CurrentProduct);
+
+            //on a Delete, there are two possibilities
+            //a) a records(s) did get altered
+            //b) no record(s) were ACTUALLy altered AND the request did NOT abort
+            if (rowsaffected == 0)
+            {
+                feedBackMessage = $"Product {CurrentProduct.ProductName} (ID: {CurrentProduct.ProductId}) "
+                                + $" has not been activated. Check for product again.";
+            }
+            else
+            {
+                feedBackMessage = $"Product {CurrentProduct.ProductName} (ID: {CurrentProduct.ProductId}) has been activated.";
+            }
+        }
+        catch (ArgumentNullException ex)
+        {
+            //usually if an error occurs only ONE message will be executed
+            //You could setup a special error message string to display on your page
+            //  that is NOT the validationMessageStore and is NOT the feedBackMessage
+            //You could style this special error message string as an alert alert-danger
+            feedBackMessage = $"Missing Data: {(ex).Message}";
+        }
+        catch (ArgumentException ex)
+        {
+            feedBackMessage = $"Data Issue: {(ex).Message}";
+        }
+        catch (Exception ex)
+        {
+            feedBackMessage = $"System Error: {(ex).Message}";
+        }
+
+        
+    
+    }
 
     private async Task OnClear()
     {
