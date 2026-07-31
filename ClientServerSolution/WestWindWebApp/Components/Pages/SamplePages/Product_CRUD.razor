@@ -191,7 +191,7 @@ this is optional
             else
             {
                 <button type="submit" class="btn btn-outline-danger rounded-pill"
-                        @onclick="OnDelete" style="width:130px;">
+                        @onclick="OnDeleteLogical" style="width:130px;">
                     Discontinue
                 </button>
             }
@@ -206,6 +206,10 @@ this is optional
             <button type="submit" class="btn btn-outline-primary rounded-pill"
                     @onclick="GoToSearch" style="width:130px;">
                 Search
+            </button>
+            <button type="submit" class="btn btn-outline-primary rounded-pill"
+                    @onclick="OnDeletePhysical" style="width:130px;">
+                Phy Delete
             </button>
         </div>
 
@@ -386,10 +390,113 @@ this is optional
     }
 
 
+    // Permanentely remove a product from table
+    private void OnDeletePhysical()
+    {
 
-    private void OnDelete()
-    {}
+        //clear old messages
+        feedBackMessage = "";
+        validationMessageStore.Clear(); //this replaces the old List<string> errorMsgs
 
+        try
+        {
+            //all work against the DB is done in a separate project and/or class
+
+            //the first test is to check to see if there are ANY errors already caught
+            //  by the form using the DataAnnotationsValidator?
+            if (editContext.Validate())
+            {
+                //entering this code means that the DataAnnotation of your entity is satisfied
+
+                //if there are additional custom validation of your data
+                //  you can still do that within the event coding
+
+                //custom validation for this form will check to see if a category
+                //  and supplier have been select (why: the list have a prompt that
+                //  has a non valid sql foreign key value)
+
+                //Problem:
+                // CategoryID is an integer
+                // the default of an integer is 0 ( a value)
+                // NO foreign key/primary key on the database is 0
+                //      if a proper selection is not done, then when the
+                //      record is attempted to be added to the the database
+                //      the database will throw an exception
+
+                //Solution: custom validation
+                if (CurrentProduct.CategoryId == 0)
+                {
+                    //construction of the validation message store command
+                    // .Add to your instance of the form for the indicated field
+                    // parameter 1: the associated field to display the message
+                    //              looking for the "field identifier"
+                    //              use nameof(xxx) to supplier of the "field identifier"
+                    //      example: editContext.Field(nameof(CurrentProduct.CategoryID))
+                    // parameter 2: the message to display
+                    //      example: "You must select a category"
+                    validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.CategoryId)),
+                                                "You must select a category");
+                }
+                if (CurrentProduct.SupplierId == 0)
+                {
+                    validationMessageStore.Add(editContext.Field(nameof(CurrentProduct.SupplierId)),
+                                                "You must select a supplier");
+                }
+                //once your custom validation is done, if there was any new errors, you can check to see
+                //  what your validationMessageStore contains
+
+                //if there are any new messages , indicate to the form that the store has been altered
+                //to do this, we will use the Linq method .Any()  to determine if something exists
+                //NOTE: the .Any() returns only a true or false; it does NOT return an actual record(s)
+                //      the .Where() returns actual record(s)
+                if (editContext.GetValidationMessages().Any())
+                {
+                    //notify the editContext that there has been a change to the Validation state
+                    editContext.NotifyValidationStateChanged();
+                }
+                else
+                {
+                    //the program assumes that the data is clean and can be further processed
+
+                    int rowsaffected = _productServices.Product_PhysicalDelete(CurrentProduct);
+
+
+
+                    //if an error was thrown by the ProductServices or by the database
+                    //  control will be passed to the catch
+                    //if no error was thrown by the ProductServices or by the database
+                    //  one assumes the data is on the database: success
+                    //you need to communicate with the user this success
+                    feedBackMessage = $"Product {CurrentProduct.ProductName}  has been Deleted";
+                }
+            }
+        }
+        catch (ArgumentNullException ex)
+        {
+            //usually if an error occurs only ONE message will be executed
+            //You could setup a special error message string to display on your page
+            //  that is NOT the validationMessageStore and is NOT the feedBackMessage
+            //You could style this special error message string as an alert alert-danger
+            feedBackMessage = $"Missing Data: {(ex).Message}";
+        }
+        catch (ArgumentException ex)
+        {
+            feedBackMessage = $"Data Issue: {(ex).Message}";
+        }
+        catch (Exception ex)
+        {
+            feedBackMessage = $"System Error: {(ex).Message}";
+        }
+
+
+
+    }
+
+    // Logically Discontinue a Product by setting up the flag
+    private void OnDeleteLogical()
+    { }
+    
+    // Make the discontinued product available
     private void OnActivate()
     {}
 

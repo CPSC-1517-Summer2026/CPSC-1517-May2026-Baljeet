@@ -239,6 +239,61 @@ namespace ClassWestWindSystem.BLL
             //return item.ProductId;
         }
 
+        // Delete operation
+
+        public int Product_PhysicalDelete(Product item)
+        {
+            //  was data actually passed to the method
+            if (item == null)
+            {
+                throw new ArgumentNullException("Product information was not received. Removal not done.");
+            }
+
+            //does the pkey exist?
+            //if the pkey does not exist then no delete will happen
+            //check to see if a delete to the expected record can be done
+            //   by looking for the pkey
+            if (!_context.Products.Any(x => x.ProductId == item.ProductId))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} is not on file. Check for the product again.");
+
+
+            //HOWEVER!! this record could be a parent to one or more "child" records
+            //One should ensure that there is no existing child record for the
+            //  parent BEFORE attempting the delete
+
+            //using the virual navigational properties, one could check to see
+            //  if any child records (collection) exists for the parent
+            //if there is a cascade delete setup on your dataset and is allowed
+            //  then these checks are unnecessary
+
+            if (!_context.Products.Any(x => x.ManifestItems.Count > 0))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} has manifest associated records. Cannot remove product.");
+
+            if (!_context.Products.Any(x => x.OrderDetails.Count > 0))
+                throw new ArgumentException($"Product {item.ProductName}  " +
+                   $"  of size {item.QuantityPerUnit} has order detail associated records. Cannot remove product.");
+
+            //there is two steps to complete the process of adding your data to the database
+            // a) Staging
+            // b) Commit
+
+            EntityEntry<Product> deleting = _context.Entry(item);
+
+            deleting.State = Microsoft.EntityFrameworkCore.EntityState.Deleted;
+
+            //Commit
+            // this sends ALL staged data in local memory to the database for processing
+
+            //ANY annotation validation is in your entity, it is executed to validate the data
+            //  going to the database
+            //if there is a validation problem then an exception is thrown and processing of
+            //  the commit is terminated (transaction RollBack)
+
+            return _context.SaveChanges();
+
+        }
 
     }
 }

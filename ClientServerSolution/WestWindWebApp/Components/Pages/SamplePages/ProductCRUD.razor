@@ -125,13 +125,13 @@ this is optional
                             //           the crud page will need to alter its @page directive to capture
                             //                the routing parameter
                             //           on this page add the parameter value to send to the href
-                            @* <tr>
-                                @* <td><a href="/productcrud/@item.ProductId">View</a></td> *@
-                            @*     <td>@item.pro</td>
+                            <tr>
+                                <td><a href="/productcrud/@item.ProductId">View</a></td> 
+                                <td>@item.ProductName</td>
                                 <td>@item.QuantityPerUnit</td>
                                 <td> @item.SupplierId</td>
                                 <td>@(item.Discontinued ? "Yes" : " ")</td>
-                            </tr> *@ 
+                            </tr> 
                         }
                     </tbody>
 
